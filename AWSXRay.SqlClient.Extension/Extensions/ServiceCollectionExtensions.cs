@@ -2,7 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AWSXRay.SqlClient.Extension.Extensions
+// ReSharper disable once CheckNamespace
+namespace AWSXRay.SqlClient.Extension
 {
     public static class ServiceCollectionExtensions
     {

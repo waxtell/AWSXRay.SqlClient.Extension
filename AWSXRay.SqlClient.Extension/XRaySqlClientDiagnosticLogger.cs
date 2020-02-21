@@ -7,7 +7,6 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using Amazon.XRay.Recorder.Core;
-using AWSXRay.SqlClient.Extension.Extensions;
 using Newtonsoft.Json;
 
 namespace AWSXRay.SqlClient.Extension

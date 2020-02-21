@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace AWSXRay.SqlClient.Extension.Extensions
+// ReSharper disable once CheckNamespace
+namespace AWSXRay.SqlClient.Extension
 {
     internal static class ObjectExtensions
     {
