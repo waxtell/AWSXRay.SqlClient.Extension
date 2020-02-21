@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Linq;
 using Amazon.XRay.Recorder.Core;
 using AWSXRay.SqlClient.Extension.Extensions;
 using Newtonsoft.Json;
@@ -15,10 +16,12 @@ namespace AWSXRay.SqlClient.Extension
     {
         private const string SqlClientDiagnosticListenerKey = "SqlClientDiagnosticListener";
         private readonly List<IDisposable> _subscription = new List<IDisposable>();
+        private readonly XRaySqlClientLoggerOptions _options;
 
-        public XRaySqlClientDiagnosticLogger()
+        public XRaySqlClientDiagnosticLogger(XRaySqlClientLoggerOptions options)
         {
             _subscription.Add(DiagnosticListener.AllListeners.Subscribe(this));
+            _options = options;
         }
 
         [DiagnosticName("System.Data.SqlClient")]
@@ -59,17 +62,20 @@ namespace AWSXRay.SqlClient.Extension
                             {
                                 recorder.AddSqlInformation("sanitized_query", command.CommandText);
 
-                                foreach (SqlParameter p in command.Parameters)
+                                if (command.Parameters.InputParameters().Any() && _options.ShouldCaptureQueryParameters(command.CommandText))
                                 {
-                                    if (p.Direction == ParameterDirection.Input ||
-                                        p.Direction == ParameterDirection.InputOutput)
+                                    foreach (SqlParameter p in command.Parameters)
                                     {
-                                        recorder
-                                            .AddMetadata
-                                            (
-                                                p.ParameterName,
-                                                JsonConvert.SerializeObject(p.Value)
-                                            );
+                                        if (p.Direction == ParameterDirection.Input ||
+                                            p.Direction == ParameterDirection.InputOutput)
+                                        {
+                                            recorder
+                                                .AddMetadata
+                                                (
+                                                    p.ParameterName,
+                                                    JsonConvert.SerializeObject(p.Value)
+                                                );
+                                        }
                                     }
                                 }
                             }
@@ -89,10 +95,9 @@ namespace AWSXRay.SqlClient.Extension
                     {
                         if (recorder.IsEntityPresent() && command != null)
                         {
-                            foreach (SqlParameter p in command.Parameters)
+                            if (command.Parameters.OutputParameters().Any() && _options.ShouldCaptureQueryParameters(command.CommandText))
                             {
-                                if (p.Direction == ParameterDirection.Output ||
-                                    p.Direction == ParameterDirection.ReturnValue)
+                                foreach (SqlParameter p in command.Parameters.OutputParameters())
                                 {
                                     recorder
                                         .AddMetadata

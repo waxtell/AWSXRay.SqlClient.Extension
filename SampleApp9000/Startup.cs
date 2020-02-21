@@ -20,7 +20,7 @@ namespace SampleApp9000
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSqlClientXRayTracing();
+            services.AddSqlClientXRayTracing(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

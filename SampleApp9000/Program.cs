@@ -10,7 +10,7 @@ namespace SampleApp9000
         {
             CreateHostBuilder(args)
                 .Build()
-                .ActivateService<XRaySqlClientDiagnosticLogger>()
+                .ActivateXRaySqlClientDiagnosticsLogging()
                 .Run();
         }
 

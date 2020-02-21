@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Host.ActivateService.Extension" Version="1.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\AWSXRay.SqlClient.Extension\AWSXRay.SqlClient.Extension.csproj" />
   </ItemGroup>
 
