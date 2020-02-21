@@ -15,5 +15,20 @@ Commands are included/excluded in accordance with rules defined in appsettings.j
     ]
   }
 }
+```
 
+The sample app needs more work, but it sufficiently demonstrates the configuration requirements.
+
+Please note that you must register the diagnostic logger as well as the XRay middleware.  Additionally, the diagnostic logger must be activated **after** the middleware has been added.  This may be achieved by activating on start (if you're using Autofac or Ninject) or as such if you're using native .net core DI:
+
+```csharp
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            CreateHostBuilder(args)
+                .Build()
+                .ActivateXRaySqlClientDiagnosticsLogging()
+                .Run();
+        }
 ```
