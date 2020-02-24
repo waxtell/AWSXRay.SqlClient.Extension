@@ -26,7 +26,7 @@ namespace SampleApp9000
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseXRay("SampleApp9000");
+            app.UseXRay("SampleApp9000", Configuration);
 
             if (env.IsDevelopment())
             {
