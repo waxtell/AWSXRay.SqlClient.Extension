@@ -8,6 +8,9 @@ This code/package provides a non-invasive mechanism for tracing sql calls.  Non-
 Commands are included/excluded in accordance with rules defined in appsettings.json
 ```
 {
+  "XRay": {
+    "CollectSqlQueries": "true"
+  },
   "XRaySqlClientLoggerOptions": {
     "CaptureQueryParameters": [
       { "type": "include", "Expression": "[Test].[Whatever]", "IsRegEx": false },
@@ -31,4 +34,17 @@ Please note that you must register the diagnostic logger as well as the XRay mid
                 .ActivateXRaySqlClientDiagnosticsLogging()
                 .Run();
         }
+```
+
+```csharp
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddControllers();
+            services.AddSqlClientXRayTracing(Configuration);
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            app.UseXRay("SampleApp9000", Configuration);
 ```
