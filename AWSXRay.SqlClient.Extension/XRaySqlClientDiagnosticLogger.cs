@@ -63,18 +63,14 @@ namespace AWSXRay.SqlClient.Extension
 
                                 if (command.Parameters.InputParameters().Any() && _options.ShouldCaptureQueryParameters(command.CommandText))
                                 {
-                                    foreach (SqlParameter p in command.Parameters)
+                                    foreach (var p in command.Parameters.InputParameters())
                                     {
-                                        if (p.Direction == ParameterDirection.Input ||
-                                            p.Direction == ParameterDirection.InputOutput)
-                                        {
-                                            recorder
-                                                .AddMetadata
-                                                (
-                                                    p.ParameterName,
-                                                    JsonConvert.SerializeObject(p.Value)
-                                                );
-                                        }
+                                        recorder
+                                            .AddMetadata
+                                            (
+                                                p.ParameterName,
+                                                JsonConvert.SerializeObject(p.Value)
+                                            );
                                     }
                                 }
                             }
@@ -96,7 +92,7 @@ namespace AWSXRay.SqlClient.Extension
                         {
                             if (command.Parameters.OutputParameters().Any() && _options.ShouldCaptureQueryParameters(command.CommandText))
                             {
-                                foreach (SqlParameter p in command.Parameters.OutputParameters())
+                                foreach (var p in command.Parameters.OutputParameters())
                                 {
                                     recorder
                                         .AddMetadata

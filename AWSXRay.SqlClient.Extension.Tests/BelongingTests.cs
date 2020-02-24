@@ -31,5 +31,23 @@ namespace AWSXRay.SqlClient.Extension.Tests
 
             Assert.False(options.ShouldCaptureQueryParameters("[Schema].[StoredProc]"));
         }
+
+        [Fact]
+        public void StoredProcedureRegExMatchIncludedCaptureIsTrue()
+        {
+            var options = new XRaySqlClientLoggerOptions();
+            options.CaptureQueryParameters.Add(new Include { Expression = ".*", IsRegEx = true });
+
+            Assert.True(options.ShouldCaptureQueryParameters("[Schema].[StoredProc]"));
+        }
+
+        [Fact]
+        public void StoredProcedureRegExMatchExcludedCaptureIsTrue()
+        {
+            var options = new XRaySqlClientLoggerOptions();
+            options.CaptureQueryParameters.Add(new Exclude { Expression = ".*", IsRegEx = true });
+
+            Assert.False(options.ShouldCaptureQueryParameters("[Schema].[StoredProc]"));
+        }
     }
 }
