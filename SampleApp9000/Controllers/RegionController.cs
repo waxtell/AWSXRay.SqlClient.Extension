@@ -18,19 +18,16 @@ namespace SampleApp9000.Controllers
         }
 
         /// <summary>
-        /// Please note this is not a demonstrate of best practices, but rather
-        /// a demonstrate of functionality
+        /// Please note this is not to demonstrate best practices, but rather
+        /// to demonstrate basic functionality
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         public IEnumerable<Region> Get()
         {
-            using (var connection = new SqlConnection(
-                "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Northwind;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False")
-            )
-            {
-                return connection.Query<Region>("SELECT RegionID, RegionDescription FROM [Northwind].[dbo].[Region]");
-            }
+            using var connection = new SqlConnection("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Northwind;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+
+            return connection.Query<Region>("SELECT RegionID, RegionDescription FROM [Northwind].[dbo].[Region]");
         }
     }
 }

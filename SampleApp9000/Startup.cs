@@ -27,6 +27,7 @@ namespace SampleApp9000
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseXRay("SampleApp9000", Configuration);
+            app.ActivateXRaySqlClientDiagnosticsLogging();
 
             if (env.IsDevelopment())
             {

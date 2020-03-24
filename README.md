@@ -25,26 +25,14 @@ The sample app needs more work, but it sufficiently demonstrates the configurati
 Please note that you must register the diagnostic logger as well as the XRay middleware.  Additionally, the diagnostic logger must be activated **after** the middleware has been added.  This may be achieved by activating on start (if you're using Autofac or Ninject) or as such if you're using native .net core DI:
 
 ```csharp
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args)
-                .Build()
-                .ActivateXRaySqlClientDiagnosticsLogging()
-                .Run();
-        }
-```
-
-```csharp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
             services.AddSqlClientXRayTracing(Configuration);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseXRay("SampleApp9000", Configuration);
+            app.ActivateXRaySqlClientDiagnosticsLogging();
 ```
