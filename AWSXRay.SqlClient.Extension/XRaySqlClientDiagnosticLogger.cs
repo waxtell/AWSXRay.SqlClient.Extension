@@ -1,13 +1,11 @@
 ﻿using Microsoft.Extensions.DiagnosticAdapter;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using Amazon.XRay.Recorder.Core;
-using Newtonsoft.Json;
 
 namespace AWSXRay.SqlClient.Extension
 {
@@ -69,7 +67,7 @@ namespace AWSXRay.SqlClient.Extension
                                             .AddMetadata
                                             (
                                                 p.ParameterName,
-                                                JsonConvert.SerializeObject(p.Value)
+                                                p.Value
                                             );
                                     }
                                 }
@@ -98,7 +96,7 @@ namespace AWSXRay.SqlClient.Extension
                                         .AddMetadata
                                         (
                                             p.ParameterName,
-                                            JsonConvert.SerializeObject(p.Value)
+                                            p.Value
                                         );
                                 }
                             }

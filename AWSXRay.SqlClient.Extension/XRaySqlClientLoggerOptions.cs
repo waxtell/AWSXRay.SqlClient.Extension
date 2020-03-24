@@ -10,21 +10,12 @@ namespace AWSXRay.SqlClient.Extension
     {
         public List<Belonging> CaptureQueryParameters { get; set; } = new List<Belonging>();
 
+
         internal bool ShouldCaptureQueryParameters(string comparator)
         {
-            var exclude = CaptureQueryParameters
-                            ?.OfType<Exclude>()
-                            .Any(x => x.IsMatch(comparator));
-
-            var include = CaptureQueryParameters
-                            ?.OfType<Include>()
-                            .Any(x => x.IsMatch(comparator));
-
-            return 
-            (
-                (include.HasValue && include.Value) && 
-                (!exclude.HasValue || !exclude.Value)
-            );
+            return
+                CaptureQueryParameters
+                    .LastOrDefault(x => x.IsMatch(comparator)) is Include;
         }
     }
 }

@@ -8,6 +8,9 @@ This code/package provides a non-invasive mechanism for tracing sql calls.  Non-
 Commands are included/excluded in accordance with rules defined in appsettings.json
 ```
 {
+  "XRay": {
+    "CollectSqlQueries": "true"
+  },
   "XRaySqlClientLoggerOptions": {
     "CaptureQueryParameters": [
       { "type": "include", "Expression": "[Test].[Whatever]", "IsRegEx": false },
@@ -22,13 +25,14 @@ The sample app needs more work, but it sufficiently demonstrates the configurati
 Please note that you must register the diagnostic logger as well as the XRay middleware.  Additionally, the diagnostic logger must be activated **after** the middleware has been added.  This may be achieved by activating on start (if you're using Autofac or Ninject) or as such if you're using native .net core DI:
 
 ```csharp
-    public class Program
-    {
-        public static void Main(string[] args)
+        public void ConfigureServices(IServiceCollection services)
         {
-            CreateHostBuilder(args)
-                .Build()
-                .ActivateXRaySqlClientDiagnosticsLogging()
-                .Run();
+            services.AddControllers();
+            services.AddSqlClientXRayTracing(Configuration);
         }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            app.UseXRay("SampleApp9000", Configuration);
+            app.ActivateXRaySqlClientDiagnosticsLogging();
 ```
