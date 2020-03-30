@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DiagnosticAdapter;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
@@ -26,13 +27,46 @@ namespace AWSXRay.SqlClient.Extension
         {
         }
 
+        private static void CreateSubSegmentForConnection(DbConnection connection, IAWSXRayRecorder recorder)
+        {
+            string BuildSubSegmentName() => connection.Database + "@" + SqlUtil.RemovePortNumberFromDataSource(connection.DataSource);
+
+            recorder.BeginSubsegment(BuildSubSegmentName());
+            recorder.SetNamespace("remote");
+            recorder.AddSqlInformation("database_type", "sqlserver");
+            recorder.AddSqlInformation("database_version", connection.State == ConnectionState.Open ? connection.ServerVersion : "Not Available");
+
+            var connectionStringBuilder = new SqlConnectionStringBuilder(connection.ConnectionString);
+            connectionStringBuilder.Remove("Password");
+            if (!string.IsNullOrEmpty(connectionStringBuilder.UserID))
+            {
+                recorder.AddSqlInformation("user", connectionStringBuilder.UserID);
+            }
+
+            recorder.AddSqlInformation("connection_string", connectionStringBuilder.ToString());
+        }
+
+        private static void AddCommandDetails(SqlCommand command, IAWSXRayRecorder recorder, bool captureParameters)
+        {
+            recorder.AddSqlInformation("sanitized_query", command.CommandText);
+
+            if (command.Parameters.InputParameters().Any() && captureParameters)
+            {
+                foreach (var p in command.Parameters.InputParameters())
+                {
+                    recorder
+                        .AddMetadata
+                        (
+                            p.ParameterName,
+                            p.Value
+                        );
+                }
+            }
+        }
+
         [DiagnosticName("System.Data.SqlClient.WriteCommandBefore")]
         public void SqlClientWriteCommandBefore(Guid operationId, string operation, Guid connectionId, SqlCommand command)
         {
-            string BuildSubSegmentName(DbCommand cmd)
-                => cmd.Connection.Database + "@" +
-                   SqlUtil.RemovePortNumberFromDataSource(cmd.Connection.DataSource);
-
             AWSXRayRecorder
                 .Instance
                 .With
@@ -41,36 +75,11 @@ namespace AWSXRay.SqlClient.Extension
                     {
                         if (recorder.IsEntityPresent() && command != null)
                         {
-                            recorder.BeginSubsegment(BuildSubSegmentName(command));
-                            recorder.SetNamespace("remote");
-                            recorder.AddSqlInformation("database_type", "sqlserver");
-                            recorder.AddSqlInformation("database_version", command.Connection.ServerVersion);
-
-                            var connectionStringBuilder = new SqlConnectionStringBuilder(command.Connection.ConnectionString);
-                            connectionStringBuilder.Remove("Password");
-                            if (!string.IsNullOrEmpty(connectionStringBuilder.UserID))
-                            {
-                                recorder.AddSqlInformation("user", connectionStringBuilder.UserID);
-                            }
-
-                            recorder.AddSqlInformation("connection_string", connectionStringBuilder.ToString());
+                            CreateSubSegmentForConnection(command.Connection, recorder);
 
                             if (recorder.XRayOptions.CollectSqlQueries)
                             {
-                                recorder.AddSqlInformation("sanitized_query", command.CommandText);
-
-                                if (command.Parameters.InputParameters().Any() && _options.ShouldCaptureQueryParameters(command.CommandText))
-                                {
-                                    foreach (var p in command.Parameters.InputParameters())
-                                    {
-                                        recorder
-                                            .AddMetadata
-                                            (
-                                                p.ParameterName,
-                                                p.Value
-                                            );
-                                    }
-                                }
+                                AddCommandDetails(command, recorder, _options.ShouldCaptureQueryParameters(command.CommandText));
                             }
                         }
                     }
@@ -109,6 +118,44 @@ namespace AWSXRay.SqlClient.Extension
 
         [DiagnosticName("System.Data.SqlClient.WriteCommandError")]
         public void SqlClientWriteCommandError(Guid operationId, string operation, Guid connectionId, SqlCommand command, Exception exception)
+        {
+            AWSXRayRecorder
+                .Instance
+                .With
+                (
+                    recorder =>
+                    {
+                        if (recorder.IsEntityPresent() && exception != null)
+                        {
+                            recorder
+                                .AddException(exception);
+                        }
+                    }
+                );
+        }
+
+        [DiagnosticName("System.Data.SqlClient.WriteConnectionOpenError")]
+        public void SqlClientWriteConnectionOpenError(SqlConnection connection, Exception exception)
+        {
+            AWSXRayRecorder
+                .Instance
+                .With
+                (
+                    recorder =>
+                    {
+                        if (recorder.IsEntityPresent() && exception != null)
+                        {
+                            CreateSubSegmentForConnection(connection, recorder);
+
+                            recorder
+                                .AddException(exception);
+                        }
+                    }
+                );
+        }
+
+        [DiagnosticName("System.Data.SqlClient.WriteConnectionCloseError")]
+        public void SqlClientWriteConnectionCloseError(SqlConnection connection, Exception exception)
         {
             AWSXRayRecorder
                 .Instance

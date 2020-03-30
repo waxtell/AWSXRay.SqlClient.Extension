@@ -10,7 +10,6 @@ namespace AWSXRay.SqlClient.Extension
     {
         public List<Belonging> CaptureQueryParameters { get; set; } = new List<Belonging>();
 
-
         internal bool ShouldCaptureQueryParameters(string comparator)
         {
             return
