@@ -4,10 +4,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Will Axtell</Authors>
     <Description>Enable AWS XRay tracing for SQL client commands</Description>
-    <PackageReleaseNotes>2.0.0- Reduced dependencies (breaking change!)
+    <PackageReleaseNotes>2.0.1- Add support for open/close errors
+2.0.0- Reduced dependencies (breaking change!)
 1.0.2- Cleaned up parameter loop
 1.0.0- Initial release</PackageReleaseNotes>
-    <Version>2.0.0</Version>
+    <Version>2.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
