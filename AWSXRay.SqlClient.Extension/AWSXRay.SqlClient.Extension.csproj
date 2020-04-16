@@ -1,22 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Authors>Will Axtell</Authors>
     <Description>Enable AWS XRay tracing for SQL client commands</Description>
-    <PackageReleaseNotes>2.0.1- Add support for open/close errors
+    <PackageReleaseNotes>2.0.2- Reduced dependences again
+2.0.1- Add support for open/close errors
 2.0.0- Reduced dependencies (breaking change!)
 1.0.2- Cleaned up parameter loop
-1.0.0- Initial release</PackageReleaseNotes>
-    <Version>2.0.1</Version>
+1.0.0- Initial release
+    </PackageReleaseNotes>
+    <Version>2.0.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AWSXRayRecorder.Core" Version="2.6.2" />
     <PackageReference Include="ConfigurationSection.Inheritance.Extension" Version="1.0.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.DiagnosticAdapter" Version="2.1.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
-    <PackageReference Include="AWSXRayRecorder.Handlers.AspNetCore" Version="2.6.2" />
   </ItemGroup>
 
 </Project>
