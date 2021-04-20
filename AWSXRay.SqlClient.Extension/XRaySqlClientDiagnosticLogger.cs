@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using Amazon.XRay.Recorder.Core;
+using Microsoft.Data.SqlClient;
 
 namespace AWSXRay.SqlClient.Extension
 {
@@ -22,7 +22,7 @@ namespace AWSXRay.SqlClient.Extension
             _options = options;
         }
 
-        [DiagnosticName("System.Data.SqlClient")]
+        [DiagnosticName("Microsoft.Data.SqlClient")]
         public void IsEnabled()
         {
         }
@@ -64,8 +64,8 @@ namespace AWSXRay.SqlClient.Extension
             }
         }
 
-        [DiagnosticName("System.Data.SqlClient.WriteCommandBefore")]
-        public void SqlClientWriteCommandBefore(Guid operationId, string operation, Guid connectionId, SqlCommand command)
+        [DiagnosticName("Microsoft.Data.SqlClient.WriteCommandBefore")]
+        public void SqlClientWriteCommandBefore(Guid operationId, string operation, Guid _, SqlCommand command)
         {
             AWSXRayRecorder
                 .Instance
@@ -86,8 +86,8 @@ namespace AWSXRay.SqlClient.Extension
                 );
         }
 
-        [DiagnosticName("System.Data.SqlClient.WriteCommandAfter")]
-        public void SqlClientWriteCommandAfter(Guid operationId, string operation, Guid connectionId, SqlCommand command)
+        [DiagnosticName("Microsoft.Data.SqlClient.WriteCommandAfter")]
+        public void SqlClientWriteCommandAfter(Guid operationId, string operation, Guid _, SqlCommand command)
         {
             AWSXRayRecorder
                 .Instance
@@ -116,8 +116,8 @@ namespace AWSXRay.SqlClient.Extension
                 );
         }
 
-        [DiagnosticName("System.Data.SqlClient.WriteCommandError")]
-        public void SqlClientWriteCommandError(Guid operationId, string operation, Guid connectionId, SqlCommand command, Exception exception)
+        [DiagnosticName("Microsoft.Data.SqlClient.WriteCommandError")]
+        public void SqlClientWriteCommandError(Guid operationId, string operation, Guid _, SqlCommand command, Exception exception)
         {
             AWSXRayRecorder
                 .Instance
@@ -134,7 +134,7 @@ namespace AWSXRay.SqlClient.Extension
                 );
         }
 
-        [DiagnosticName("System.Data.SqlClient.WriteConnectionOpenError")]
+        [DiagnosticName("Microsoft.Data.SqlClient.WriteConnectionOpenError")]
         public void SqlClientWriteConnectionOpenError(SqlConnection connection, Exception exception)
         {
             AWSXRayRecorder
@@ -154,8 +154,8 @@ namespace AWSXRay.SqlClient.Extension
                 );
         }
 
-        [DiagnosticName("System.Data.SqlClient.WriteConnectionCloseError")]
-        public void SqlClientWriteConnectionCloseError(SqlConnection connection, Exception exception)
+        [DiagnosticName("Microsoft.Data.SqlClient.WriteConnectionCloseError")]
+        public void SqlClientWriteConnectionCloseError(SqlConnection _, Exception exception)
         {
             AWSXRayRecorder
                 .Instance
